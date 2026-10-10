@@ -187,12 +187,14 @@ for raw in body_lines:
         toks = line.strip().split()
         cur.append('<p class="keywords">' + ''.join('<span>%s</span>' % html.escape(t) for t in toks) + '</p>')
         continue
-    # 引文: ">> " 前缀 -> blockquote 样式段落
+    # 引文: ">> " 前缀 -> blockquote 样式段落; ">> 　"(全角空格) -> 选文内空行; 裸 ">>" 行忽略
     if line.strip().startswith('>>'):
         close_para()
         qt = line.strip().lstrip('>').strip()
         if qt:
             cur.append('<p class="quote">%s</p>' % inline(qt))
+        elif raw.rstrip('\n').rstrip('\t ') != '>>':
+            cur.append('<p class="quote">&#160;</p>')
         continue
     # 诗行: "> " 前缀的连续行合成一个 verse 段落,行内换行保留为 <br/>
     if line.strip().startswith('>'):
