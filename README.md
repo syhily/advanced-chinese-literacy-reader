@@ -18,6 +18,13 @@
 
 原始扫描 PDF 不入库，请自行准备。
 
+## 下载
+
+每次打 tag 都会由 GitHub Actions 自动构建 EPUB 并发布到 Releases：
+
+- [下载最新版 EPUB](https://github.com/syhily/advanced-chinese-literacy-reader/releases/latest/download/advanced-chinese-literacy-reader.epub)
+- [查看全部版本](https://github.com/syhily/advanced-chinese-literacy-reader/releases)
+
 ## 构建
 
 ```sh

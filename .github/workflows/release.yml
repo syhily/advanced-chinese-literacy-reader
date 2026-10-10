@@ -1,0 +1,26 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build EPUB
+        run: make
+
+      - name: Check EPUB
+        run: make check
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" advanced-chinese-literacy-reader.epub --title "$GITHUB_REF_NAME" --generate-notes
