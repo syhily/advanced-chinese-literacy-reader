@@ -139,18 +139,12 @@ for raw in body_lines:
             expect_author = False
             continue
         expect_author = False
-    if line.strip().startswith(('（以上', '（此则')) and cur_level == 3:
+    # 居右行: md 中直接写 <p class="right">…</p>(落款、文末日期、选篇出处注等)
+    m = re.match(r'^<p class="right">(.*)</p>$', line.strip())
+    if m:
         close_para()
-        cur.append('<p class="right">%s</p>' % inline(line.strip()))  # 选篇出处注,居右
+        cur.append('<p class="right">%s</p>' % inline(m.group(1)))
         continue
-    if re.match(r'^(19|20)\d{2}\s*年(\s*\d{1,2}\s*月)?(\s*\d{1,2}\s*日)?$', line.strip()) \
-            or re.match(r'^(19|20)\d{2}-\d{1,2}-\d{1,2}$', line.strip()) \
-            or re.match(r'^(19|20)\d{2}$', line.strip()) \
-            or re.match(r'^[一二三四五六七八九十]{1,3}月[一二三四五六七八九十]{1,3}日$', line.strip()):
-        if cur_level == 3 and cur_title != '小结':
-            close_para()
-            cur.append('<p class="right">%s</p>' % inline(line.strip()))  # 文末写作日期,居右
-            continue
     m = SEC.match(line)
     if m:
         close_para()
@@ -226,10 +220,6 @@ for raw in body_lines:
         new_chapter('语文素养高级读本', 2)
     stripped = line.strip()
     expect_author = False
-    if cur_title == '前言' and re.match(r'^(编撰者|\d{4}\s*年\s*\d{1,2}\s*月)$', stripped):
-        close_para()
-        cur.append('<p class="right">%s</p>' % inline(stripped))  # 落款居右
-        continue
     if cur_title == '本书所选文章作者名录':
         # 仿原书: 每行人名一栏均分;两个字的名原书为字间空,先合并单字
         close_para()
