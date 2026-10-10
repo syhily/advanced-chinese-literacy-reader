@@ -1,6 +1,6 @@
 PYTHON ?= python3
-EPUB := 语文素养高级读本.epub
-MD := 语文素养高级读本.md
+EPUB := yuwen-suyang-gaoji-duben.epub
+MD := manuscript.md
 
 .PHONY: all epub check clean
 

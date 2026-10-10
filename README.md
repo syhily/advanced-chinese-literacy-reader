@@ -8,18 +8,18 @@
 
 | 文件 | 说明 |
 | --- | --- |
-| `语文素养高级读本.md` | 全书正文中间稿（Markdown），**所有修改都在这里进行** |
+| `manuscript.md` | 全书正文中间稿（Markdown），**所有修改都在这里进行** |
 | `build_epub.py` | 构建脚本：Markdown → EPUB 3（纯 Python 标准库，无第三方依赖） |
 | `cover.jpg` | 封面图（原书封面扫描件） |
 | `Makefile` | `make` 构建，`make check` 校验，`make clean` 清理 |
-| `语文素养高级读本.epub` | 构建产物（不入库，见 Releases） |
+| `yuwen-suyang-gaoji-duben.epub` | 构建产物（不入库，见 Releases） |
 
 原始扫描 PDF 不入库，请自行准备。
 
 ## 构建
 
 ```sh
-make          # 生成 语文素养高级读本.epub
+make          # 生成 yuwen-suyang-gaoji-duben.epub
 make check    # 校验 zip 完整性与脚注引用/注释一一对应
 make clean    # 删除构建产物
 ```
@@ -28,7 +28,7 @@ make clean    # 删除构建产物
 
 ## 参与校对与修改
 
-欢迎通过 Issue 或 Pull Request 指正 OCR 讹误与排版问题。修改 `语文素养高级读本.md` 后运行 `make` 重建即可。Markdown 中的排版约定：
+欢迎通过 Issue 或 Pull Request 指正 OCR 讹误与排版问题。修改 `manuscript.md` 后运行 `make` 重建即可。Markdown 中的排版约定：
 
 - `## x-y 标题`：选文标题；其下短行带 `[^n]` 的为作者行（居中楷体）
 - `## [编读札记]`、`## [思考与讨论]`、`## [问题导引]` 等：固定栏目，方括号写法
