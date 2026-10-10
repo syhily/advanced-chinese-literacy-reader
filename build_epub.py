@@ -55,8 +55,11 @@ def inline(s):
     return s
 
 def flush():
-    global cur, cur_title
+    global cur, cur_title, in_notice
     if cur is not None and (cur or cur_title):
+        if in_notice:
+            cur.append('</div>')
+            in_notice = False
         d = {'title': cur_title, 'level': cur_level, 'lines': cur, 'unit': cur_ch_unit}
         if not cur_nav:
             d['nav'] = False
@@ -77,6 +80,7 @@ para_open = False
 in_front = True
 cur_nav = True
 in_daoyin = False
+in_notice = False
 daoyin_of = {}
 in_keywords = False
 cur_unit = 0
@@ -173,7 +177,11 @@ for raw in body_lines:
         t = m.group(2).strip()
         if in_front:  # 前置部分(书名页/作者名录/内容简介/前言等)
             new_chapter(t, 2)
-            cur.append('<h1>%s</h1>' % inline(t))
+            if t == '电子版说明与免责声明':  # 独立分页,居中卡片样式
+                cur.append('<div class="notice"><h2>%s</h2>' % html.escape(t))
+                in_notice = True
+            else:
+                cur.append('<h1>%s</h1>' % inline(t))
         elif t.startswith('——'):  # 文章副题
             cur.append('<p class="subtitle">%s</p>' % inline(t))
         elif t.rstrip('：:') == '注释':  # 文内注释小标题(居左,无缩进)
@@ -424,6 +432,9 @@ open(BUILD + '/OEBPS/style.css', 'w').write(
     'p.namerow{display:flex;justify-content:space-between;text-indent:0;margin:0.25em 0;}\n'
     'p.namerow span{white-space:nowrap;}\n'
     'p.thanks{text-align:center;font-weight:bold;text-indent:0;margin-top:1.5em;}\n'
+    '.notice{max-width:32em;margin:4em auto 0;padding:1.8em 2em;border:1px solid #c5c5c5;border-radius:8px;background:#f7f7f7;}\n'
+    '.notice h2{font-size:1.05em;text-align:center;letter-spacing:0.15em;margin:0 0 1.2em;color:#444;border-bottom:1px solid #ddd;padding-bottom:0.8em;}\n'
+    '.notice p{text-indent:0;font-size:0.92em;color:#555;line-height:1.9;margin:0.8em 0;}\n'
     'sup{font-size:0.75em;}\naside p{text-indent:0;}\n')
 
 # 打包
