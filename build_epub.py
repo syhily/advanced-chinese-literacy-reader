@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-"""合并稿 Markdown -> EPUB3(带脚注弹注/尾注、三级目录)。纯标准库。"""
-import re, os, zipfile, html, shutil
+"""manuscript/ 目录下按序合并的分单元 Markdown -> EPUB3(带脚注弹注/尾注、三级目录)。纯标准库。"""
+import re, os, glob, json, zipfile, html, shutil
 from xml.etree.ElementTree import parse as xmlparse
 
-SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'manuscript.md')
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'advanced-chinese-literacy-reader.epub')
-BUILD = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'build', 'epub')
+HERE = os.path.dirname(os.path.abspath(__file__))
+SRC_DIR = os.path.join(HERE, 'manuscript')
+OUT = os.path.join(HERE, 'advanced-chinese-literacy-reader.epub')
+BUILD = os.path.join(HERE, 'build', 'epub')
 
-text = open(SRC).read()
+# 按文件名序合并所有单元 Markdown
+text = ''.join(open(p, encoding='utf-8').read() for p in sorted(glob.glob(os.path.join(SRC_DIR, '*.md'))))
 
 # --- 切掉印刷版目录(页码对 EPUB 无意义) ---
 lines = text.split('\n')
@@ -42,14 +44,11 @@ ART = re.compile(r'^#+\s*(\d+\s*-\s*\d+.*)$')
 TIYAO = re.compile(r'（[^（）]{2,8}）\s*$')  # 各篇提要里的「标题（作者）」条目
 SEC = re.compile(r'^#+\s*[\[（]?\s*(编读札记|思考与讨论|问题导引|各篇提要|关键词语|要点提炼|争议聚焦|拓展阅读指引|小结)\s*[\]）]?\s*$')
 ANYH = re.compile(r'^(#+)\s*(.*)$')
-IN_ARTICLE_SUBHEADS = {'汉语的特征', '汉字的特征', '中国语文的优点与缺陷', '解题', '反思', '建议',
-    '语言就是内容', '语言的文化积淀', '言外之意', '气盛言宜', '视觉语言', '色、形、音',
-    '随时锻炼语言', '训练语感', '惊人与平淡', '方言',
-    '一、21 世纪，华语将在全世界华人中普遍推广',
-    '二、21 世纪，汉字将成为定形、定量、规范统一的文字',
-    '三、21 世纪，拼音将帮助华人在网络上便利流通',
-    '汉语的强与弱', '汉语走强的战略与举措',
-    '一、谐声', '二、拆字', '三、歧义', '四、歇后及其他'}
+# 行内标题等硬编码内容放在各单元的同名 JSON 配置里,构建时合并
+IN_ARTICLE_SUBHEADS = set()
+for cfg_path in sorted(glob.glob(os.path.join(SRC_DIR, '*.json'))):
+    cfg = json.load(open(cfg_path, encoding='utf-8'))
+    IN_ARTICLE_SUBHEADS.update(cfg.get('in_article_subheads', []))
 
 ref_place = {}   # fn id -> (chapter href)
 chapters = []    # {title, level, html}  level: 1 编 2 单元/前置 3 文章
