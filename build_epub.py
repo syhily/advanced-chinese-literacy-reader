@@ -139,8 +139,8 @@ for raw in body_lines:
             expect_author = False
             continue
         expect_author = False
-    # 居右行: md 中直接写 <p class="right">…</p>(落款、文末日期、选篇出处注等)
-    m = re.match(r'^<p class="right">(.*)</p>$', line.strip())
+    # 居右行: md 中写 <p style="text-align:right">…</p>(落款、文末日期、选篇出处注等),归一化为 class
+    m = re.match(r'^<p style="text-align:\s*right">(.*)</p>$', line.strip())
     if m:
         close_para()
         cur.append('<p class="right">%s</p>' % inline(m.group(1)))

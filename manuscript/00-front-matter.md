@@ -88,9 +88,9 @@
 
 本书仍然存在不足，诚请各位专家、读者，继续给予指正。
 
-<p class="right">编撰者</p>
+<p style="text-align:right">编撰者</p>
 
-<p class="right">2006 年 6 月</p>
+<p style="text-align:right">2006 年 6 月</p>
 
 ## 电子版说明与免责声明
 
