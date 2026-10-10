@@ -1,0 +1,6 @@
+build/
+*.epub
+*.pdf
+*.bak
+.DS_Store
+__pycache__/
