@@ -4,7 +4,7 @@ import re, os, zipfile, html, shutil
 from xml.etree.ElementTree import parse as xmlparse
 
 SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'manuscript.md')
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'yuwen-suyang-gaoji-duben.epub')
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'advanced-chinese-literacy-reader.epub')
 BUILD = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'build', 'epub')
 
 text = open(SRC).read()

@@ -1,5 +1,5 @@
 PYTHON ?= python3
-EPUB := yuwen-suyang-gaoji-duben.epub
+EPUB := advanced-chinese-literacy-reader.epub
 MD := manuscript.md
 
 .PHONY: all epub check clean

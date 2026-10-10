@@ -165,7 +165,7 @@ http://www.landraco.com.cn
 
 2006 年 6 月
 
-电子版说明：本电子书由扫描版《语文素养高级读本》经 OCR 识别、人工校对后排版而成，中间稿为 Markdown，全部脚注按单元保留并重新编号。本电子版的源码与构建工具托管于 GitHub（https://github.com/syhily/yuwen-suyang-gaoji-duben），欢迎指正讹误、提交修改。
+电子版说明：本电子书由扫描版《语文素养高级读本》经 OCR 识别、人工校对后排版而成，中间稿为 Markdown，全部脚注按单元保留并重新编号。本电子版的源码与构建工具托管于 GitHub（https://github.com/syhily/advanced-chinese-literacy-reader），欢迎指正讹误、提交修改。
 
 免责声明：本书著作权归原作者及高等教育出版社所有。本电子版仅供个人学习与研究使用，不作任何商业用途。OCR 识别与人工校对可能存在讹误，内容请以高等教育出版社纸质原书为准。若涉及侵权，请联系删除。
 

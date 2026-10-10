@@ -1,4 +1,4 @@
-# 语文素养高级读本（EPUB 版）
+# 语文素养高级读本（Advanced Chinese Literacy Reader）
 
 李瑞山 编撰 · 高等教育出版社 · 2006 年
 
@@ -12,14 +12,14 @@
 | `build_epub.py` | 构建脚本：Markdown → EPUB 3（纯 Python 标准库，无第三方依赖） |
 | `cover.jpg` | 封面图（原书封面扫描件） |
 | `Makefile` | `make` 构建，`make check` 校验，`make clean` 清理 |
-| `yuwen-suyang-gaoji-duben.epub` | 构建产物（不入库，见 Releases） |
+| `advanced-chinese-literacy-reader.epub` | 构建产物（不入库，见 Releases） |
 
 原始扫描 PDF 不入库，请自行准备。
 
 ## 构建
 
 ```sh
-make          # 生成 yuwen-suyang-gaoji-duben.epub
+make          # 生成 advanced-chinese-literacy-reader.epub
 make check    # 校验 zip 完整性与脚注引用/注释一一对应
 make clean    # 删除构建产物
 ```
