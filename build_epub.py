@@ -142,7 +142,9 @@ for raw in body_lines:
         cur.append('<p class="right">%s</p>' % inline(line.strip()))  # 选篇出处注,居右
         continue
     if re.match(r'^(19|20)\d{2}\s*年(\s*\d{1,2}\s*月)?(\s*\d{1,2}\s*日)?$', line.strip()) \
-            or re.match(r'^(19|20)\d{2}-\d{1,2}-\d{1,2}$', line.strip()):
+            or re.match(r'^(19|20)\d{2}-\d{1,2}-\d{1,2}$', line.strip()) \
+            or re.match(r'^(19|20)\d{2}$', line.strip()) \
+            or re.match(r'^[一二三四五六七八九十]{1,3}月[一二三四五六七八九十]{1,3}日$', line.strip()):
         if cur_level == 3 and cur_title != '小结':
             close_para()
             cur.append('<p class="right">%s</p>' % inline(line.strip()))  # 文末写作日期,居右
