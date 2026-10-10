@@ -8,22 +8,8 @@ SRC_DIR = os.path.join(HERE, 'manuscript')
 OUT = os.path.join(HERE, 'advanced-chinese-literacy-reader.epub')
 BUILD = os.path.join(HERE, 'build', 'epub')
 
-# 按文件名序合并所有单元 Markdown
+# 按文件名序合并所有单元 Markdown(源文件已清理: 无印刷版目录、CIP 页、封面残页)
 text = ''.join(open(p, encoding='utf-8').read() for p in sorted(glob.glob(os.path.join(SRC_DIR, '*.md'))))
-
-# --- 切掉印刷版目录(页码对 EPUB 无意义) ---
-lines = text.split('\n')
-start = next(i for i, l in enumerate(lines) if l.strip() == '## 目录')
-end = next(i for i, l in enumerate(lines) if l.strip().startswith('## 上编'))
-del lines[start:end]
-# 去掉开头两行碎片("七五" 等)
-if lines[0].strip() == '七五':
-    del lines[0:2]
-# 封面页与书名页重复,只保留书名页(第二个「# 语文素养高级读本」起)
-title_hits = [i for i, l in enumerate(lines[:40]) if l.strip() == '# 语文素养高级读本']
-if len(title_hits) >= 2:
-    del lines[:title_hits[1]]
-text = '\n'.join(lines)
 
 # --- 分离脚注定义 ---
 defs = {}
@@ -103,19 +89,10 @@ def close_para():
         para_open = False
 
 cur_href = 'chap00.xhtml'
-# 版权页(CIP)信息按用户要求整体略去
-skip_cip = False
 for raw in body_lines:
     line = raw.rstrip()
     if not line.strip():
         close_para()
-        continue
-    if line.strip() == '图书在版编目（CIP）数据':
-        skip_cip = True
-        continue
-    if skip_cip:
-        if line.strip().startswith('物料号'):
-            skip_cip = False
         continue
     m = BIAN.match(line)
     if m:
