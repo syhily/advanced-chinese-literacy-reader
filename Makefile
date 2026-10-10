@@ -1,6 +1,6 @@
 PYTHON ?= python3
 EPUB := advanced-chinese-literacy-reader.epub
-SRC_FILES := $(sort $(wildcard manuscript/*.md manuscript/*.json))
+SRC_FILES := $(sort $(wildcard manuscript/*.md))
 
 .PHONY: all epub check clean
 

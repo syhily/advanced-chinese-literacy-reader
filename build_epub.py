@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """manuscript/ 目录下按序合并的分单元 Markdown -> EPUB3(带脚注弹注/尾注、三级目录)。纯标准库。"""
-import re, os, glob, json, zipfile, html, shutil
+import re, os, glob, zipfile, html, shutil
 from xml.etree.ElementTree import parse as xmlparse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -30,13 +30,6 @@ ART = re.compile(r'^#+\s*(\d+\s*-\s*\d+.*)$')
 TIYAO = re.compile(r'（[^（）]{2,8}）\s*$')  # 各篇提要里的「标题（作者）」条目
 SEC = re.compile(r'^#+\s*[\[（]?\s*(编读札记|思考与讨论|问题导引|各篇提要|关键词语|要点提炼|争议聚焦|拓展阅读指引|小结)\s*[\]）]?\s*$')
 ANYH = re.compile(r'^(#+)\s*(.*)$')
-# 行内标题等硬编码内容放在各单元的同名 JSON 配置里,按文章号(x-y)归组,构建时合并
-SUBHEADS_BY_ARTICLE = {}
-for cfg_path in sorted(glob.glob(os.path.join(SRC_DIR, '*.json'))):
-    cfg = json.load(open(cfg_path, encoding='utf-8'))
-    for art, subs in cfg.get('in_article_subheads', {}).items():
-        SUBHEADS_BY_ARTICLE.setdefault(art, set()).update(subs)
-
 ref_place = {}   # fn id -> (chapter href)
 chapters = []    # {title, level, html}  level: 1 编 2 单元/前置 3 文章
 cur = None       # 当前 chapter 的 html 行列表
@@ -184,12 +177,10 @@ for raw in body_lines:
             cur.append('<p class="subtitle">%s</p>' % inline(t))
         elif t.rstrip('：:') == '注释':  # 文内注释小标题(居左,无缩进)
             cur.append('<h3>%s</h3>' % html.escape(t.rstrip('：:')))
-        else:
-            art_m = re.match(r'(\d+)\s*-\s*(\d+)', cur_title or '')
-            if art_m and t in SUBHEADS_BY_ARTICLE.get('%s-%s' % art_m.groups(), ()):
-                cur.append('<h3 class="center">%s</h3>' % inline(t))  # 文内小标题(居中,按文章号匹配)
-                continue
-            cur.append('<p>%s</p>' % inline(t))  # OCR 误判为标题的正文行
+        elif len(m.group(1)) >= 3:  # ### 文内小标题(居中)
+            cur.append('<h3 class="center">%s</h3>' % inline(t))
+        else:  # OCR 误判为标题的正文行
+            cur.append('<p>%s</p>' % inline(t))
         continue
     if in_keywords and line.strip():
         close_para()

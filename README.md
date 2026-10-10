@@ -10,7 +10,6 @@
 | --- | --- |
 | `manuscript/00-front-matter.md` | 前置部分（书名页、作者名录、前言等） |
 | `manuscript/01-unit-01.md` … `18-unit-18.md` | 各单元正文（**所有修改都在对应单元文件里进行**），构建时按文件名序合并 |
-| `manuscript/NN-unit-NN.json` | 单元配置：行内标题（`in_article_subheads`，居中显示）等硬编码内容 |
 | `build_epub.py` | 构建脚本：Markdown → EPUB 3（纯 Python 标准库，无第三方依赖） |
 | `cover.jpg` | 封面图（原书封面扫描件） |
 | `Makefile` | `make` 构建，`make check` 校验，`make clean` 清理 |
@@ -47,7 +46,7 @@ make clean    # 删除构建产物
 - `__文字__`：着重号（字下圆点；GitHub 上会显示为粗体，EPUB 中为着重号）
 - `<p style="text-align:right">…</p>`：整行居右（落款、文末写作日期、选篇出处注等）
 - `[^n]:`：脚注定义；正文 `[^n]` 引用；构建时按单元拆分并重新编号
-- 文内小标题（居中）登记在对应单元的 JSON 配置里，按文章号归组：`"in_article_subheads": {"3-6": ["解题", "反思", "建议"]}`
+- `### 标题`：文内小标题（居中显示）
 - 文末日期、落款、出处注等需要居右的内容，用 `<p style="text-align:right">…</p>` 单独一行标记
 - 段内换行不渲染为空格；数字/英文与汉字之间的空格由构建脚本自动处理
 
