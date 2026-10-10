@@ -47,6 +47,8 @@ toc = []         # (level, title, href, article_children[])
 def inline(s):
     s = html.escape(s, quote=False)
     s = re.sub(r'\$([^\$]+)\$', r'\1', s)
+    s = re.sub(r'\*\*([^\*]+)\*\*', r'<strong>\1</strong>', s)  # 加粗
+    s = re.sub(r'__([^_]+)__', r'<em class="dot">\1</em>', s)  # 着重号
     def fnref(m):
         n = m.group(1)
         ref_place[n] = cur_href
@@ -437,7 +439,8 @@ open(BUILD + '/OEBPS/style.css', 'w').write(
     '.notice{max-width:32em;margin:4em auto 0;padding:1.8em 2em;border:1px solid #c5c5c5;border-radius:8px;background:#f7f7f7;}\n'
     '.notice h2{font-size:1.05em;text-align:center;letter-spacing:0.15em;margin:0 0 1.2em;color:#444;border-bottom:1px solid #ddd;padding-bottom:0.8em;}\n'
     '.notice p{text-indent:0;font-size:0.92em;color:#555;line-height:1.9;margin:0.8em 0;}\n'
-    'sup{font-size:0.75em;}\naside p{text-indent:0;}\n')
+    'sup{font-size:0.75em;}\naside p{text-indent:0;}\n'
+    'em.dot{font-style:normal;text-emphasis:filled dot;-webkit-text-emphasis:filled dot;text-emphasis-position:under;-webkit-text-emphasis-position:under;}\n')
 
 # 打包
 if os.path.exists(OUT):
