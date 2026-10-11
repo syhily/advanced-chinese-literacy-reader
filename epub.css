@@ -3,35 +3,50 @@
 /* ==========================================================================
    《语文素养高级读本》EPUB 样式表(pandoc 工具链)
    --------------------------------------------------------------------------
-   字体策略: 不嵌入字体文件,按「黑体 、 宋体 、 楷体 、 仿宋」四种字形为各平台
-   指定系统字体回退链,阅读器自上而下取第一个可用的字体:
+   字体策略: 不嵌入字体文件。各字形回退链采用 zenozeng/fonts.css
+   https://github.com/zenozeng/fonts.css 的定义, 覆盖 Windows、macOS、Linux
+   的常见中文字体; 西文衬线/无衬线字体置于链首, 保证跨平台字形一致。
+   阅读器自上而下取第一个可用的字体。
+
+   fonts.css 版权声明(MIT):
+   Copyright (C) 2013-2018 Zeno Zeng and contributors
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, subject to inclusion of this notice.
+
+   正文(body)不设置任何字体, 沿用阅读器默认字体, 尊重读者的字体偏好。
 
      iOS 、 macOS : PingFang SC(苹方)、Songti SC(宋体-简)、Kaiti SC(楷体-简)、
-                   STFangsong(华文仿宋)等华文字库
+                   STFangsong(华文仿宋)、Hiragino Sans GB(冬青黑体)等
      Windows     : Microsoft YaHei(微软雅黑)、SimSun、NSimSun(中易宋体)、
                    KaiTi(楷体)、FangSong(仿宋)、SimHei(黑体)
-     Android     : Noto Sans、Serif CJK SC(思源黑体、宋体)、Droid Sans Fallback
+     Android     : Noto Sans、Serif CJK SC(思源黑体、宋体)
      Linux       : Noto、Source Han(思源)、文泉驿(WenQuanYi)、文鼎 AR PL 系列
    ========================================================================== */
 
-/* ---- 字形回退链(集中定义,便于维护;EPUB 阅读器对 var() 支持不一,正文仍写全链) ----
-   宋体 SONG : "Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC",
-               "Noto Serif SC","Source Han Serif CN","SimSun","NSimSun",
-               "AR PL UMing CN","TW-Sung",serif
-   黑体 HEI  : "PingFang SC","Heiti SC","STHeiti","Microsoft YaHei",
-               "Noto Sans CJK SC","Source Han Sans SC","Noto Sans SC","Source Han Sans CN",
-               "SimHei","WenQuanYi Micro Hei","Droid Sans Fallback",sans-serif
-   楷体 KAI  : "Kaiti SC","STKaiti","KaiTi","KaiTi_GB2312","AR PL KaitiM GB",
-               "AR PL UKai CN","TW-Kai", + 宋体链
-   仿宋 FANG : "STFangsong","FangSong","FangSong_GB2312","AR PL Fangsong", + 宋体链
+/* ---- 字形回退链(fonts.css 定义, 集中注释便于对照; EPUB 阅读器对 var() 支持不一,
+       正文仍写全链) ----
+   宋体 SONG : Georgia,"Nimbus Roman No9 L","Songti SC","Noto Serif CJK SC",
+               "Source Han Serif SC","Source Han Serif CN",STSong,
+               "AR PL New Sung","AR PL SungtiL GB",NSimSun,SimSun,"TW-Sung",
+               "WenQuanYi Bitmap Song","AR PL UMing *",PMingLiU,MingLiU,serif
+   黑体 HEI  : -apple-system,"Noto Sans","Helvetica Neue",Helvetica,
+               "Nimbus Sans L",Arial,"Liberation Sans","PingFang SC",
+               "Hiragino Sans GB","Noto Sans CJK SC","Source Han Sans *",
+               "Microsoft YaHei","WenQuanYi Micro Hei","WenQuanYi Zen Hei",
+               "ST Heiti",SimHei,"WenQuanYi Zen Hei Sharp",sans-serif
+   楷体 KAI  : Baskerville,Georgia,"Liberation Serif","Kaiti SC",STKaiti,
+               "AR PL UKai *","AR PL KaitiM GB",KaiTi,KaiTi_GB2312,DFKai-SB,
+               "TW-Kai",serif
+   仿宋 FANG : Baskerville,"Times New Roman","Liberation Serif",STFangsong,
+               FangSong,FangSong_GB2312,"CWTEX-F",serif
 --------------------------------------------------------------------------- */
 
 /* ---------- 正文 ---------- */
 body {
-  font-family: "Songti SC", "STSong",
-    "Noto Serif CJK SC", "Source Han Serif SC", "Noto Serif SC", "Source Han Serif CN",
-    "SimSun", "NSimSun", "AR PL UMing CN", "TW-Sung",
-    serif;
+  /* 不设置 font-family: 正文沿用阅读器默认字体 */
   line-height: 1.75;
   margin: 0;
   padding: 0 5%;
@@ -49,10 +64,11 @@ p {
 
 /* 段落内强调: 中文出版惯例以黑体表示加重(宋体伪粗体会糊) */
 strong {
-  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
-    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
-    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
-    sans-serif;
+  font-family: -apple-system, "Noto Sans", "Helvetica Neue", Helvetica,
+    "Nimbus Sans L", Arial, "Liberation Sans", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN",
+    "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti",
+    SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
   font-weight: bold;
 }
 
@@ -93,8 +109,11 @@ section[role="doc-titlepage"] {
 }
 h1.title,
 section.titlepage h1 {
-  font-family: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC",
-    "Noto Serif SC", "SimSun", serif;
+  font-family: Georgia, "Nimbus Roman No9 L", "Songti SC", "Noto Serif CJK SC",
+    "Source Han Serif SC", "Source Han Serif CN", STSong, "AR PL New Sung",
+    "AR PL SungtiL GB", NSimSun, SimSun, "TW-Sung", "WenQuanYi Bitmap Song",
+    "AR PL UMing CN", "AR PL UMing HK", "AR PL UMing TW", "AR PL UMing TW MBE",
+    PMingLiU, MingLiU, serif;
   font-size: 2.1em;
   font-weight: bold;
   letter-spacing: 0.18em;
@@ -109,8 +128,9 @@ section[role="doc-titlepage"] p {
 }
 section.titlepage p.author,
 section[role="doc-titlepage"] p.author {
-  font-family: "Kaiti SC", "STKaiti", "KaiTi", "KaiTi_GB2312", "AR PL KaitiM GB",
-    "AR PL UKai CN", "TW-Kai", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+  font-family: Baskerville, Georgia, "Liberation Serif", "Kaiti SC", STKaiti,
+    "AR PL UKai CN", "AR PL UKai HK", "AR PL UKai TW", "AR PL UKai TW MBE",
+    "AR PL KaitiM GB", KaiTi, KaiTi_GB2312, DFKai-SB, "TW-Kai", serif;
   font-size: 1.15em;
   letter-spacing: 0.1em;
 }
@@ -135,10 +155,11 @@ section.titlepage p:empty {
 /* ---------- 标题层级 ---------- */
 /* 一级: 上、中、下编(部分隔页) */
 h1 {
-  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
-    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
-    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
-    sans-serif;
+  font-family: -apple-system, "Noto Sans", "Helvetica Neue", Helvetica,
+    "Nimbus Sans L", Arial, "Liberation Sans", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN",
+    "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti",
+    SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
   font-size: 1.6em;
   font-weight: bold;
   text-align: center;
@@ -151,10 +172,11 @@ h1 {
 
 /* 二级: 单元 */
 h2 {
-  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
-    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
-    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
-    sans-serif;
+  font-family: -apple-system, "Noto Sans", "Helvetica Neue", Helvetica,
+    "Nimbus Sans L", Arial, "Liberation Sans", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN",
+    "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti",
+    SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
   font-size: 1.35em;
   font-weight: bold;
   text-align: center;
@@ -170,10 +192,11 @@ h2 {
 /* 三级: 选文标题 、 小结 */
 /* !important: 对抗部分阅读器自带的标题样式覆盖 */
 h3 {
-  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
-    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
-    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
-    sans-serif !important;
+  font-family: -apple-system, "Noto Sans", "Helvetica Neue", Helvetica,
+    "Nimbus Sans L", Arial, "Liberation Sans", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN",
+    "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti",
+    SimHei, "WenQuanYi Zen Hei Sharp", sans-serif !important;
   font-size: 1.2em !important;
   font-weight: bold !important;
   text-align: center !important;
@@ -191,10 +214,11 @@ h3.xj {
 
 /* 四级: 栏目(编读札记、思考与讨论、关键词语……)与文内小标题 */
 h4 {
-  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
-    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
-    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
-    sans-serif;
+  font-family: -apple-system, "Noto Sans", "Helvetica Neue", Helvetica,
+    "Nimbus Sans L", Arial, "Liberation Sans", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN",
+    "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti",
+    SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
   font-size: 1.02em;
   font-weight: bold;
   text-indent: 0;
@@ -210,8 +234,9 @@ h4.center {
 /* 选文作者(居中楷体) */
 .author p,
 .author {
-  font-family: "Kaiti SC", "STKaiti", "KaiTi", "KaiTi_GB2312", "AR PL KaitiM GB",
-    "AR PL UKai CN", "TW-Kai", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+  font-family: Baskerville, Georgia, "Liberation Serif", "Kaiti SC", STKaiti,
+    "AR PL UKai CN", "AR PL UKai HK", "AR PL UKai TW", "AR PL UKai TW MBE",
+    "AR PL KaitiM GB", KaiTi, KaiTi_GB2312, DFKai-SB, "TW-Kai", serif;
   text-align: center;
   text-indent: 0;
   margin: 0.2em 0 1.4em;
@@ -219,8 +244,9 @@ h4.center {
 /* 副题(——…,居中楷体,略小) */
 .subtitle p,
 .subtitle {
-  font-family: "Kaiti SC", "STKaiti", "KaiTi", "KaiTi_GB2312", "AR PL KaitiM GB",
-    "AR PL UKai CN", "TW-Kai", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+  font-family: Baskerville, Georgia, "Liberation Serif", "Kaiti SC", STKaiti,
+    "AR PL UKai CN", "AR PL UKai HK", "AR PL UKai TW", "AR PL UKai TW MBE",
+    "AR PL KaitiM GB", KaiTi, KaiTi_GB2312, DFKai-SB, "TW-Kai", serif;
   font-size: 0.95em;
   text-align: center;
   text-indent: 0;
@@ -237,10 +263,11 @@ h4.center {
 /* ---------- 各篇提要 ---------- */
 /* 条目样式与小结内栏目标题(h4)一致: 黑体加粗 */
 .tiyao p {
-  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
-    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
-    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
-    sans-serif;
+  font-family: -apple-system, "Noto Sans", "Helvetica Neue", Helvetica,
+    "Nimbus Sans L", Arial, "Liberation Sans", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN",
+    "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti",
+    SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
   font-size: 1.02em;
   font-weight: bold;
   color: #333;
@@ -264,8 +291,9 @@ h4.center {
 /* ---------- 引文与诗歌 ---------- */
 /* 引文(>> …): 楷体、左右缩进、左侧细线 */
 .quote {
-  font-family: "Kaiti SC", "STKaiti", "KaiTi", "KaiTi_GB2312", "AR PL KaitiM GB",
-    "AR PL UKai CN", "TW-Kai", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+  font-family: Baskerville, Georgia, "Liberation Serif", "Kaiti SC", STKaiti,
+    "AR PL UKai CN", "AR PL UKai HK", "AR PL UKai TW", "AR PL UKai TW MBE",
+    "AR PL KaitiM GB", KaiTi, KaiTi_GB2312, DFKai-SB, "TW-Kai", serif;
   font-size: 0.96em;
   margin: 0.6em 1.2em;
   padding-left: 0.9em;
@@ -302,10 +330,11 @@ h4.center {
 }
 /* 胶囊用 inline-block 保持整体不破折, 在词与词之间的空格处按实际宽度自然换行 */
 .kw {
-  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
-    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
-    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
-    sans-serif;
+  font-family: -apple-system, "Noto Sans", "Helvetica Neue", Helvetica,
+    "Nimbus Sans L", Arial, "Liberation Sans", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN",
+    "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti",
+    SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
   font-size: 0.88em;
   display: inline-block;
   background: #f4f4f4;
@@ -368,8 +397,9 @@ p.thanks {
 }
 /* 书刊名《…》: 楷体, 与篇名、作者、出处分层 */
 .bt {
-  font-family: "Kaiti SC", "STKaiti", "KaiTi", "KaiTi_GB2312", "AR PL KaitiM GB",
-    "AR PL UKai CN", "TW-Kai", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+  font-family: Baskerville, Georgia, "Liberation Serif", "Kaiti SC", STKaiti,
+    "AR PL UKai CN", "AR PL UKai HK", "AR PL UKai TW", "AR PL UKai TW MBE",
+    "AR PL KaitiM GB", KaiTi, KaiTi_GB2312, DFKai-SB, "TW-Kai", serif;
 }
 
 /* ---------- 脚注 、 尾注(pandoc 生成) ---------- */
@@ -425,8 +455,11 @@ a.footnote-back {
 
 /* ---------- 目录(nav.xhtml) ---------- */
 nav#toc {
-  font-family: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC",
-    "Noto Serif SC", "SimSun", serif;
+  font-family: Georgia, "Nimbus Roman No9 L", "Songti SC", "Noto Serif CJK SC",
+    "Source Han Serif SC", "Source Han Serif CN", STSong, "AR PL New Sung",
+    "AR PL SungtiL GB", NSimSun, SimSun, "TW-Sung", "WenQuanYi Bitmap Song",
+    "AR PL UMing CN", "AR PL UMing HK", "AR PL UMing TW", "AR PL UMing TW MBE",
+    PMingLiU, MingLiU, serif;
 }
 nav#toc > h1,
 nav#toc h1 {
@@ -449,9 +482,11 @@ nav#toc li {
 }
 /* 第一级: 编 */
 nav#toc > ol > li > a {
-  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
-    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC",
-    "SimHei", "WenQuanYi Micro Hei", sans-serif;
+  font-family: -apple-system, "Noto Sans", "Helvetica Neue", Helvetica,
+    "Nimbus Sans L", Arial, "Liberation Sans", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN",
+    "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti",
+    SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
   font-weight: bold;
   font-size: 1.05em;
 }
