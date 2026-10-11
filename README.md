@@ -2,15 +2,17 @@
 
 李瑞山 编撰 · 高等教育出版社 · 2006 年
 
-本项目将扫描版《语文素养高级读本》PDF 经 OCR（[MinerU](https://github.com/opendatalab/MinerU)）识别、人工校对后排版为 Markdown，再由构建脚本生成 EPUB 3 电子书。全书 18 个单元、136 篇选文、281 条脚注，脚注按单元拆分、每单元重新编号。
+本项目将扫描版《语文素养高级读本》PDF 经 OCR（[MinerU](https://github.com/opendatalab/MinerU)）识别、人工校对后排版为 Markdown，再由 [pandoc](https://pandoc.org) 工具链构建为 EPUB 3 电子书。全书 18 个单元、136 篇选文、279 条脚注（随所在章节分页，支持阅读器弹注）。
 
 ## 文件结构
 
 | 文件 | 说明 |
 | --- | --- |
 | `manuscript/00-front-matter.md` | 前置部分（书名页、作者名录、前言等） |
-| `manuscript/01-unit-01.md` … `18-unit-18.md` | 各单元正文（**所有修改都在对应单元文件里进行**），构建时按文件名序合并 |
-| `build_epub.py` | 构建脚本：Markdown → EPUB 3（纯 Python 标准库，无第三方依赖） |
+| `manuscript/01-unit-01.md` … `18-unit-18.md` | 各单元正文（**所有修改都在对应单元文件里进行**） |
+| `filter.lua` | pandoc Lua 过滤器（精简版）：只负责 `>` 诗行、`>>` 引文块的转换与合并、段内软换行合并、正文书名号标楷体——其余排版约定都已在稿件里写成 pandoc 原生标记 |
+| `epub.css` | 样式表：按黑体/宋体/楷体/仿宋四种字形为 iOS、macOS、Windows、Android、Linux 定义系统字体回退链，并细化各级标题、引文、诗歌、脚注、目录等排版 |
+| `metadata.yaml` | EPUB 元数据（书名、编撰者、出版社、语种、ISBN 等），pandoc 据此生成书名页 |
 | `cover.jpg` | 封面图（原书封面扫描件） |
 | `Makefile` | `make` 构建，`make check` 校验，`make clean` 清理 |
 | `advanced-chinese-literacy-reader.epub` | 构建产物（不入库，见 Releases） |
@@ -27,28 +29,68 @@
 ## 构建
 
 ```sh
-make          # 生成 advanced-chinese-literacy-reader.epub
+make          # pandoc 一条命令生成 advanced-chinese-literacy-reader.epub
 make check    # 校验 zip 完整性与脚注引用/注释一一对应
 make clean    # 删除构建产物
 ```
 
-只依赖 Python 3（标准库），无需安装任何包。
+依赖 pandoc（≥ 3.1，需 Lua filter 支持）；`make check` 用到 Python 3（标准库）。macOS 可 `brew install pandoc`，Debian/Ubuntu 可 `apt install pandoc`。
+
+构建即一条 pandoc 命令：`--lua-filter=filter.lua --split-level=3 --toc-depth=4`，编 > 单元 > 选文三级分页与目录（每个单元另含「问题导引」条目）；脚注随章末为尾注（EPUB 3 `epub:type="footnote"`，Apple Books 等阅读器可弹注）。不加 `--toc`，故 `nav.xhtml` 目录文档仍生成供阅读器侧栏使用，但不会作为书页出现在翻页顺序里。
 
 ## 参与校对与修改
 
-欢迎通过 Issue 或 Pull Request 指正 OCR 讹误与排版问题。修改对应单元的 `manuscript/NN-unit-NN.md` 后运行 `make` 重建即可。Markdown 中的排版约定：
+欢迎通过 Issue 或 Pull Request 指正 OCR 讹误与排版问题。修改对应单元的 `manuscript/NN-unit-NN.md` 后运行 `make` 重建即可。稿件采用 pandoc 原生 Markdown，绝大多数排版意图直接写在稿件的标记里；`filter.lua` 只兜底几件 Markdown 表达不了的事（见文末）。
 
-- `## x-y 标题`：选文标题；其下短行带 `[^n]` 的为作者行（居中楷体）
-- `## 编读札记`、`## 思考与讨论`、`## [问题导引]` 等：固定栏目，方括号写法
-- `> 诗行`：诗歌（行内换行保留，连续行合为一个诗节，空行分节）
-- `>> 文字`：选文/引文（blockquote，楷体缩进），每行一段；`>> 　`（后接一个全角空格）：选文内的空行
-- `**文字**`：加粗（如各则札记的小标题）
-- `__文字__`：着重号（字下圆点；GitHub 上会显示为粗体，EPUB 中为着重号）
-- `<p style="text-align:right">…</p>`：整行居右（落款、文末写作日期、选篇出处注等）
-- `[^n]:`：脚注定义；正文 `[^n]` 引用；构建时按单元拆分并重新编号
-- `### 标题`：文内小标题（居中显示）
-- 文末日期、落款、出处注等需要居右的内容，用 `<p style="text-align:right">…</p>` 单独一行标记
-- 段内换行不渲染为空格；数字/英文与汉字之间的空格由构建脚本自动处理
+### 标题层级
+
+| 写法 | 用途 | 独立分页 | 入目录 |
+| --- | --- | --- | --- |
+| `# 上编 …` | 编（上 / 中 / 下） | 是 | 是 |
+| `## 单元X …` | 单元 | 是 | 是 |
+| `### x-y 标题[^n]` | 选文（带脚注引用） | 是 | 是 |
+| `### 小结 {.xj}` | 单元小结 | 是 | 是 |
+| `#### 问题导引 {.center}` | 问题导引栏目 | 否 | 是 |
+| `#### 栏目名 {.unlisted}` | 编读札记、思考与讨论、各篇提要、要点提炼、争议聚焦、拓展阅读指引、注释 | 否 | 否 |
+| `#### 文内小标题 {.center .unlisted}` | 选文内的居中小标题 | 否 | 否 |
+| `# 前置章节 {.unlisted}` | 内容简介、作者名录、前言、电子版说明、郑重声明 | 是 | 否 |
+
+分页与目录由 `--split-level=3 --toc-depth=4` 决定；`.unlisted` 表示该标题不进目录。
+
+### 区块（fenced div）
+
+| 写法 | 用途 |
+| --- | --- |
+| `::: tiyao` … `:::` | 各篇提要条目 |
+| `::: daoyin` … `:::` | 问题导引的正文（卡片框） |
+| `::: kwbox` … `:::` | 关键词语胶囊区（框内写 `[词]{.kw}`） |
+| `::: notice` … `:::` | 电子版说明与免责声明的正文（卡片框） |
+| `::: author` / `::: subtitle` / `::: right` | 作者行（居中楷体）/ 副题 / 居右落款 |
+| `::: bib-entry` … `:::` | 拓展阅读指引的文献条目 |
+| `::: namerow` … `:::` | 作者名录每行（`[姓名]{.name}` 分栏） |
+| `::: note` / `::: thanks` | 名录内的括注 / 致谢行 |
+
+### 行内
+
+| 写法 | 效果 |
+| --- | --- |
+| `**文字**` | 加重（渲染为黑体） |
+| `[文字]{.dot}` | 着重号（字下圆点） |
+| `[词语]{.kw}` | 关键词语胶囊 |
+| `[姓名]{.name}` | 名录分栏单元 |
+| `《书刊名》` | 全书自动渲染为楷体（含引文与脚注） |
+| `[^n]:` 定义 + 正文 `[^n]` | 脚注；编号全书连续、随章节分页 |
+
+### 由 filter.lua 处理的四种情况
+
+以下内容无法用 Markdown 表达，构建时由 `filter.lua` 转换：
+
+1. `> 诗行` → `div.verse` 行块：行内换行保留、空行分节、整首居中；相邻诗节合并共享左缘；
+2. `>> 文字` → `div.quote` 引文块：每行一段、楷体缩进；相邻引文块合并避免空行；
+3. 段内软换行合并：两侧都是汉字则相连，一侧是数字/英文则补一个空格；
+4. 正文书名号《…》标 `span.bt`（楷体）。
+
+`>` / `>>` 保留 Markdown 引用块写法，是为了 GitHub 预览时仍能以引用块形式显示。
 
 ## 免责声明
 

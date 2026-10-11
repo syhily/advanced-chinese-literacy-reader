@@ -1,0 +1,472 @@
+@namespace epub url("http://www.idpf.org/2007/ops");
+
+/* ==========================================================================
+   《语文素养高级读本》EPUB 样式表(pandoc 工具链)
+   --------------------------------------------------------------------------
+   字体策略: 不嵌入字体文件,按「黑体 、 宋体 、 楷体 、 仿宋」四种字形为各平台
+   指定系统字体回退链,阅读器自上而下取第一个可用的字体:
+
+     iOS 、 macOS : PingFang SC(苹方)、Songti SC(宋体-简)、Kaiti SC(楷体-简)、
+                   STFangsong(华文仿宋)等华文字库
+     Windows     : Microsoft YaHei(微软雅黑)、SimSun、NSimSun(中易宋体)、
+                   KaiTi(楷体)、FangSong(仿宋)、SimHei(黑体)
+     Android     : Noto Sans、Serif CJK SC(思源黑体、宋体)、Droid Sans Fallback
+     Linux       : Noto、Source Han(思源)、文泉驿(WenQuanYi)、文鼎 AR PL 系列
+   ========================================================================== */
+
+/* ---- 字形回退链(集中定义,便于维护;EPUB 阅读器对 var() 支持不一,正文仍写全链) ----
+   宋体 SONG : "Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC",
+               "Noto Serif SC","Source Han Serif CN","SimSun","NSimSun",
+               "AR PL UMing CN","TW-Sung",serif
+   黑体 HEI  : "PingFang SC","Heiti SC","STHeiti","Microsoft YaHei",
+               "Noto Sans CJK SC","Source Han Sans SC","Noto Sans SC","Source Han Sans CN",
+               "SimHei","WenQuanYi Micro Hei","Droid Sans Fallback",sans-serif
+   楷体 KAI  : "Kaiti SC","STKaiti","KaiTi","KaiTi_GB2312","AR PL KaitiM GB",
+               "AR PL UKai CN","TW-Kai", + 宋体链
+   仿宋 FANG : "STFangsong","FangSong","FangSong_GB2312","AR PL Fangsong", + 宋体链
+--------------------------------------------------------------------------- */
+
+/* ---------- 正文 ---------- */
+body {
+  font-family: "Songti SC", "STSong",
+    "Noto Serif CJK SC", "Source Han Serif SC", "Noto Serif SC", "Source Han Serif CN",
+    "SimSun", "NSimSun", "AR PL UMing CN", "TW-Sung",
+    serif;
+  line-height: 1.75;
+  margin: 0;
+  padding: 0 5%;
+  text-align: justify;
+  /* 中文两端对齐按表意字断行 */
+  text-justify: inter-ideograph;
+}
+
+p {
+  margin: 0.45em 0;
+  text-indent: 2em;
+  orphans: 2;
+  widows: 2;
+}
+
+/* 段落内强调: 中文出版惯例以黑体表示加重(宋体伪粗体会糊) */
+strong {
+  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
+    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
+    sans-serif;
+  font-weight: bold;
+}
+
+/* 着重号(__文字__ -> [文字]{.dot}): 字下圆点 */
+.dot {
+  font-style: normal;
+  text-emphasis: filled dot;
+  -webkit-text-emphasis: filled dot;
+  text-emphasis-position: under;
+  -webkit-text-emphasis-position: under;
+}
+
+/* 链接去下划线, 避免阅读器默认的蓝紫下划线破坏版面 */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- 列表(思考与讨论、要点提炼、争议聚焦等) ---------- */
+/* 列表项内的段落取消首行缩进, 否则数字编号与文字之间会多出 2em 空档 */
+ol,
+ul {
+  padding-left: 2em;
+}
+li {
+  margin: 0.25em 0;
+}
+li p {
+  text-indent: 0;
+  margin: 0;
+}
+
+/* ---------- 书名页(pandoc 依据 metadata 生成) ---------- */
+section.titlepage,
+section[role="doc-titlepage"] {
+  text-align: center;
+  padding-top: 20%;
+}
+h1.title,
+section.titlepage h1 {
+  font-family: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC",
+    "Noto Serif SC", "SimSun", serif;
+  font-size: 2.1em;
+  font-weight: bold;
+  letter-spacing: 0.18em;
+  text-indent: 0;
+  margin: 0 0 1.2em;
+  border: none;
+}
+section.titlepage p,
+section[role="doc-titlepage"] p {
+  text-indent: 0;
+  text-align: center;
+}
+section.titlepage p.author,
+section[role="doc-titlepage"] p.author {
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", "KaiTi_GB2312", "AR PL KaitiM GB",
+    "AR PL UKai CN", "TW-Kai", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+  font-size: 1.15em;
+  letter-spacing: 0.1em;
+}
+section.titlepage p.publisher {
+  font-size: 1em;
+  letter-spacing: 0.12em;
+  margin-top: 2.5em;
+}
+section.titlepage p.date {
+  font-size: 0.9em;
+  color: #666;
+}
+/* rights 保留在 OPF 元数据中,但书名页不重复展示(书内已有免责声明章节) */
+section.titlepage div.rights {
+  display: none;
+}
+/* pandoc 模板可能输出空段(未填 subtitle 时),隐藏之 */
+section.titlepage p:empty {
+  display: none;
+}
+
+/* ---------- 标题层级 ---------- */
+/* 一级: 上、中、下编(部分隔页) */
+h1 {
+  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
+    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
+    sans-serif;
+  font-size: 1.6em;
+  font-weight: bold;
+  text-align: center;
+  text-indent: 0;
+  letter-spacing: 0.08em;
+  page-break-before: always;
+  break-before: page;
+  margin: 2.6em 0 1.8em;
+}
+
+/* 二级: 单元 */
+h2 {
+  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
+    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
+    sans-serif;
+  font-size: 1.35em;
+  font-weight: bold;
+  text-align: center;
+  text-indent: 0;
+  letter-spacing: 0.05em;
+  page-break-before: always;
+  break-before: page;
+  margin: 1.8em 0 0.8em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid #b5b5b5;
+}
+
+/* 三级: 选文标题 、 小结 */
+/* !important: 对抗部分阅读器自带的标题样式覆盖 */
+h3 {
+  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
+    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
+    sans-serif !important;
+  font-size: 1.2em !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  text-indent: 0;
+  page-break-before: always;
+  break-before: page;
+  margin: 1.6em 0 0.4em;
+}
+/* 小结标题: 字号与单元标题(h2)看齐 */
+h3.xj {
+  font-size: 1.35em !important;
+  letter-spacing: 0.05em;
+  margin: 1.8em 0 1em;
+}
+
+/* 四级: 栏目(编读札记、思考与讨论、关键词语……)与文内小标题 */
+h4 {
+  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
+    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
+    sans-serif;
+  font-size: 1.02em;
+  font-weight: bold;
+  text-indent: 0;
+  color: #333;
+  margin: 1.3em 0 0.4em;
+}
+h4.center {
+  text-align: center;
+  margin: 1.5em 0 0.6em;
+}
+
+/* ---------- 标题下款 ---------- */
+/* 选文作者(居中楷体) */
+.author p,
+.author {
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", "KaiTi_GB2312", "AR PL KaitiM GB",
+    "AR PL UKai CN", "TW-Kai", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+  text-align: center;
+  text-indent: 0;
+  margin: 0.2em 0 1.4em;
+}
+/* 副题(——…,居中楷体,略小) */
+.subtitle p,
+.subtitle {
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", "KaiTi_GB2312", "AR PL KaitiM GB",
+    "AR PL UKai CN", "TW-Kai", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+  font-size: 0.95em;
+  text-align: center;
+  text-indent: 0;
+  margin: 0.1em 0 0.3em;
+}
+/* 居右(落款、文末日期、出处注) */
+.right p,
+.right {
+  text-align: right;
+  text-indent: 0;
+  font-size: 0.95em;
+}
+
+/* ---------- 各篇提要 ---------- */
+/* 条目样式与小结内栏目标题(h4)一致: 黑体加粗 */
+.tiyao p {
+  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
+    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
+    sans-serif;
+  font-size: 1.02em;
+  font-weight: bold;
+  color: #333;
+  text-indent: 0;
+  margin: 1.1em 0 0.3em;
+}
+
+/* ---------- 问题导引与关键词语(卡片框, 与免责声明卡片同款) ---------- */
+.daoyin,
+.kwbox {
+  padding: 0.9em 1.4em;
+  border: 1px solid #c8c4ba;
+  border-radius: 8px;
+  background: #f9f8f5;
+  margin: 0.8em 0 1.2em;
+}
+.daoyin p {
+  font-size: 0.95em;
+}
+
+/* ---------- 引文与诗歌 ---------- */
+/* 引文(>> …): 楷体、左右缩进、左侧细线 */
+.quote {
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", "KaiTi_GB2312", "AR PL KaitiM GB",
+    "AR PL UKai CN", "TW-Kai", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+  font-size: 0.96em;
+  margin: 0.6em 1.2em;
+  padding-left: 0.9em;
+  border-left: 2px solid #d4d0c8;
+}
+.quote p {
+  text-indent: 0;
+  margin: 0.25em 0;
+}
+/* 诗行(> …): pandoc line block,保留行内换行;整块居中、块内左对齐。
+   display:table 收缩到最长诗行宽度, margin:auto 居中; 不支持的阅读器退化为左对齐 */
+.verse {
+  display: table;
+  margin: 0.8em auto;
+  text-align: left;
+}
+.verse p,
+.verse .line-block {
+  text-indent: 0;
+  line-height: 1.8;
+  margin: 0;
+}
+/* 诗节间距 */
+.verse .line-block + .line-block,
+.verse p + p {
+  margin-top: 0.6em;
+}
+
+/* ---------- 关键词语胶囊 ---------- */
+.kwbox p {
+  text-indent: 0;
+  line-height: 2.4;
+  margin: 0.4em 0;
+}
+/* 胶囊用 inline-block 保持整体不破折, 在词与词之间的空格处按实际宽度自然换行 */
+.kw {
+  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", "Source Han Sans CN",
+    "SimHei", "WenQuanYi Micro Hei", "Droid Sans Fallback",
+    sans-serif;
+  font-size: 0.88em;
+  display: inline-block;
+  background: #f4f4f4;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  padding: 0.05em 0.5em;
+  margin: 0.15em 0.3em;
+  white-space: nowrap;
+}
+
+/* ---------- 作者名录 ---------- */
+.namerow p {
+  display: flex;
+  justify-content: space-between;
+  text-indent: 0;
+  margin: 0.25em 0;
+}
+.namerow span {
+  white-space: nowrap;
+}
+.note p,
+p.note {
+  text-indent: 0;
+  font-size: 0.9em;
+  color: #555;
+}
+.thanks p,
+p.thanks {
+  text-align: center;
+  font-weight: bold;
+  text-indent: 0;
+  margin-top: 1.5em;
+}
+
+/* ---------- 电子版说明与免责声明(居中卡片) ---------- */
+.notice {
+  max-width: 32em;
+  margin: 3em auto 0;
+  padding: 1.6em 1.8em;
+  border: 1px solid #c8c4ba;
+  border-radius: 8px;
+  background: #f9f8f5;
+}
+.notice p {
+  text-indent: 0;
+  font-size: 0.92em;
+  color: #555;
+  line-height: 1.9;
+  margin: 0.8em 0;
+}
+
+/* ---------- 拓展阅读指引(文献条目) ---------- */
+/* 悬挂缩进: 首行顶格, 折行缩进 2em, 条目边界一目了然 */
+.bib-entry p {
+  text-indent: -2em;
+  padding-left: 2em;
+  font-size: 0.95em;
+  margin: 0.35em 0;
+  line-height: 1.7;
+}
+/* 书刊名《…》: 楷体, 与篇名、作者、出处分层 */
+.bt {
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", "KaiTi_GB2312", "AR PL KaitiM GB",
+    "AR PL UKai CN", "TW-Kai", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+}
+
+/* ---------- 脚注 、 尾注(pandoc 生成) ---------- */
+/* 弹注场景(Apple Books 等)会把 aside 脱离章节单独渲染, 字号必须直接写在
+   aside 上; epub:type 命名空间选择器兼容性差, 用 role 属性选择器兜底 */
+
+sup {
+  font-size: 0.75em;
+  line-height: 0;
+}
+a.footnote-ref {
+  vertical-align: super;
+  font-size: 0.72em;
+  text-decoration: none;
+}
+.footnotes,
+section[role="doc-endnotes"],
+aside[role="doc-footnote"] {
+  font-size: 0.78em;
+  color: #444;
+  line-height: 1.6;
+}
+aside[epub|type="footnote"] {
+  font-size: 0.78em;
+  color: #444;
+  line-height: 1.6;
+}
+.footnotes hr {
+  width: 30%;
+  margin: 1.5em 0 0.8em 0;
+  border: none;
+  border-top: 1px solid #bbb;
+}
+.footnotes p,
+section[role="doc-endnotes"] p,
+aside[role="doc-footnote"] p {
+  text-indent: 0;
+  margin: 0.3em 0;
+  line-height: 1.6;
+}
+aside[epub|type="footnote"] p {
+  text-indent: 0;
+  margin: 0.3em 0;
+  line-height: 1.6;
+}
+.footnotes ol {
+  padding-left: 1.6em;
+}
+a.footnote-back {
+  text-decoration: none;
+  margin-left: 0.2em;
+}
+
+/* ---------- 目录(nav.xhtml) ---------- */
+nav#toc {
+  font-family: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC",
+    "Noto Serif SC", "SimSun", serif;
+}
+nav#toc > h1,
+nav#toc h1 {
+  font-size: 1.4em;
+  letter-spacing: 0.3em;
+  text-align: center;
+  margin: 1.2em 0 1.5em;
+}
+nav#toc ol {
+  list-style-type: none;
+  padding-left: 1.1em;
+  margin: 0;
+}
+nav#toc > ol {
+  padding-left: 0;
+}
+nav#toc li {
+  margin: 0.3em 0;
+  line-height: 1.8;
+}
+/* 第一级: 编 */
+nav#toc > ol > li > a {
+  font-family: "PingFang SC", "Heiti SC", "STHeiti", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC",
+    "SimHei", "WenQuanYi Micro Hei", sans-serif;
+  font-weight: bold;
+  font-size: 1.05em;
+}
+/* 第二级: 单元 */
+nav#toc > ol > li > ol > li > a {
+  font-weight: bold;
+}
+
+/* ---------- 封面 ---------- */
+body#cover {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+#cover-image svg {
+  max-width: 100%;
+  max-height: 100%;
+}

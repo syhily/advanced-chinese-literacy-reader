@@ -1,3 +1,4 @@
+PANDOC ?= pandoc
 PYTHON ?= python3
 EPUB := advanced-chinese-literacy-reader.epub
 SRC_FILES := $(sort $(wildcard manuscript/*.md))
@@ -8,21 +9,24 @@ all: epub
 
 epub: $(EPUB)
 
-$(EPUB): $(SRC_FILES) build_epub.py cover.jpg
-	$(PYTHON) build_epub.py
+$(EPUB): $(SRC_FILES) filter.lua epub.css metadata.yaml cover.jpg
+	$(PANDOC) --from=markdown-tex_math_dollars \
+		--to=epub3 --lua-filter=filter.lua \
+		--toc-depth=4 --split-level=3 \
+		--css=epub.css --metadata-file=metadata.yaml \
+		--epub-cover-image=cover.jpg \
+		--output=$@ $(SRC_FILES)
 
 check: $(EPUB)
 	unzip -t $(EPUB) > /dev/null && echo "zip ok"
 	$(PYTHON) -c "\
-import re, glob, zipfile; \
+import re, sys, zipfile; \
 z = zipfile.ZipFile('$(EPUB)'); \
-refs = asides = 0; \
-[None for n in z.namelist() if n.endswith('.xhtml') for s in [z.read(n).decode('utf-8')] for _ in [0]]; \
-import sys; \
-refs = sum(len(re.findall(r'id=\"fnref-', z.read(n).decode('utf-8'))) for n in z.namelist() if n.endswith('.xhtml')); \
-asides = sum(len(re.findall(r'id=\"fn-', z.read(n).decode('utf-8'))) for n in z.namelist() if n.endswith('.xhtml')); \
-print('fnref:', refs, 'aside:', asides); \
-sys.exit(0 if refs == asides else 1)"
+xhtml = [z.read(n).decode('utf-8') for n in z.namelist() if n.endswith(('.xhtml', '.html'))]; \
+refs = sum(s.count('doc-noteref') for s in xhtml); \
+notes = sum(s.count('doc-footnote') for s in xhtml); \
+print('noteref:', refs, 'footnote:', notes); \
+sys.exit(0 if refs == notes else 1)"
 
 clean:
 	rm -rf build $(EPUB)
