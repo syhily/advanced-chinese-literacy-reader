@@ -34,7 +34,9 @@ make check    # 校验 zip 完整性与脚注引用/注释一一对应
 make clean    # 删除构建产物
 ```
 
-依赖 pandoc（≥ 3.1，需 Lua filter 支持）；`make check` 用到 Python 3（标准库）。macOS 可 `brew install pandoc`，Debian/Ubuntu 可 `apt install pandoc`。
+依赖 pandoc（≥ 3.1，需 Lua filter 支持）。macOS 可 `brew install pandoc`，Debian/Ubuntu 可 `apt install pandoc`。
+
+`make check` 依次做三件事：`unzip -t` 校验 zip 完整性、用 `unzip` + `grep` 核对脚注引用/注释数量一致、用 pandoc 读回 EPUB 确认可解析。
 
 构建即一条 pandoc 命令：`--lua-filter=filter.lua --split-level=3 --toc-depth=4`，编 > 单元 > 选文三级分页与目录（每个单元另含「问题导引」条目）；脚注随章末为尾注（EPUB 3 `epub:type="footnote"`，Apple Books 等阅读器可弹注）。不加 `--toc`，故 `nav.xhtml` 目录文档仍生成供阅读器侧栏使用，但不会作为书页出现在翻页顺序里。
 

@@ -1,5 +1,4 @@
 PANDOC ?= pandoc
-PYTHON ?= python3
 EPUB := advanced-chinese-literacy-reader.epub
 SRC_FILES := $(sort $(wildcard manuscript/*.md))
 
@@ -19,14 +18,11 @@ $(EPUB): $(SRC_FILES) filter.lua epub.css metadata.yaml cover.jpg
 
 check: $(EPUB)
 	unzip -t $(EPUB) > /dev/null && echo "zip ok"
-	$(PYTHON) -c "\
-import re, sys, zipfile; \
-z = zipfile.ZipFile('$(EPUB)'); \
-xhtml = [z.read(n).decode('utf-8') for n in z.namelist() if n.endswith(('.xhtml', '.html'))]; \
-refs = sum(s.count('doc-noteref') for s in xhtml); \
-notes = sum(s.count('doc-footnote') for s in xhtml); \
-print('noteref:', refs, 'footnote:', notes); \
-sys.exit(0 if refs == notes else 1)"
+	@refs=$$(unzip -p $(EPUB) 'EPUB/text/*.xhtml' | grep -o 'doc-noteref' | wc -l | tr -d ' '); \
+	notes=$$(unzip -p $(EPUB) 'EPUB/text/*.xhtml' | grep -o 'doc-footnote' | wc -l | tr -d ' '); \
+	echo "noteref: $$refs footnote: $$notes"; \
+	[ "$$refs" = "$$notes" ]
+	$(PANDOC) --from=epub --to=plain $(EPUB) > /dev/null && echo "pandoc parse ok"
 
 clean:
 	rm -rf build $(EPUB)
