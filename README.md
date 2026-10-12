@@ -11,7 +11,7 @@
 | `manuscript/00-front-matter.md` | 前置部分（书名页、作者名录、前言等） |
 | `manuscript/01-unit-01.md` … `18-unit-18.md` | 各单元正文（**所有修改都在对应单元文件里进行**） |
 | `filter.lua` | pandoc Lua 过滤器（精简版）：只负责 `>` 诗行、`>>` 引文块的转换与合并、段内软换行合并、正文书名号标楷体——其余排版约定都已在稿件里写成 pandoc 原生标记 |
-| `epub.css` | 样式表：字体回退链采用 [fonts.css](https://github.com/zenozeng/fonts.css)（MIT）的定义，按黑体/宋体/楷体/仿宋四种字形覆盖 Windows、macOS、Linux 常见字体（正文默认字体不设置，沿用阅读器默认），并细化各级标题、引文、诗歌、脚注、目录等排版 |
+| `epub.css` | 样式表：字体回退链采用 [fonts.css](https://github.com/zenozeng/fonts.css)（MIT），中文排版细则参考 [typo.css](https://github.com/sofish/typo.css)（MIT，不采纳其字体与颜色设定），按黑体/宋体/楷体/仿宋四种字形覆盖 Windows、macOS、Linux 常见字体（正文默认字体不设置，沿用阅读器默认），并细化各级标题、引文、诗歌、脚注、目录等排版 |
 | `metadata.yaml` | EPUB 元数据（书名、编撰者、出版社、语种、ISBN 等），pandoc 据此生成书名页 |
 | `cover.jpg` | 封面图（原书封面扫描件） |
 | `Makefile` | `make` 构建，`make check` 校验，`make clean` 清理 |

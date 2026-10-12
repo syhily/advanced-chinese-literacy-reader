@@ -16,6 +16,18 @@
    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
    copies of the Software, subject to inclusion of this notice.
 
+   中文排版细则参考 sofish/typo.css(MIT) https://github.com/sofish/typo.css,
+   仅采纳排版规则(见「中文排版细则」节), 不采纳其 font-family 与颜色:
+   字体链以 fonts.css 为准; 不设定文字颜色以保证阅读器夜间模式可用。
+
+   typo.css 版权声明(MIT):
+   Copyright (C) 2012 Sofish Lin http://sofish.de
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, subject to inclusion of this notice.
+
    正文(body)不设置任何字体, 沿用阅读器默认字体, 尊重读者的字体偏好。
 
      iOS 、 macOS : PingFang SC(苹方)、Songti SC(宋体-简)、Kaiti SC(楷体-简)、
@@ -51,8 +63,14 @@ body {
   margin: 0;
   padding: 0 5%;
   text-align: justify;
-  /* 中文两端对齐按表意字断行 */
+  /* 中文两端对齐按表意字断行; 中文断行严格遵循标点禁则(typo.css) */
   text-justify: inter-ideograph;
+  line-break: strict;
+  /* 脚注/文献里的长 URL 允许断行防溢出(typo.css) */
+  overflow-wrap: break-word;
+  /* 行尾标点悬挂, 两端对齐更整齐(typo.css; WebKit 系阅读器生效, 余者忽略) */
+  hanging-punctuation: allow-end;
+  text-rendering: optimizeLegibility;
 }
 
 p {
@@ -85,6 +103,34 @@ strong {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* ---------- 中文排版细则(采自 typo.css, 不含字体与颜色) ---------- */
+/* 中文不使用斜体: em/cite 等取消伪斜体(西文斜体对汉字只是机械倾斜) */
+address, cite, dfn, em, var {
+  font-style: normal;
+}
+/* 标题行高压紧(正文 1.75 对多行标题太松), 多行标题尽量均衡断行 */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.35;
+  text-wrap: balance;
+}
+/* 段落与列表项在支持的引擎上避免孤词短行 */
+@supports (text-wrap: pretty) {
+  p, li {
+    text-wrap: pretty;
+  }
+}
+/* 嵌套列表: 二级圆点、间距收敛 */
+li ul, li ol {
+  margin: 0.3em 0;
+}
+li ul {
+  list-style-type: circle;
+}
+/* 中文弯引号(q 元素; 正文引号已由 pandoc smart 直接输出为字符) */
+:lang(zh), :lang(zh-Hans) {
+  quotes: "“" "”" "‘" "’";
 }
 
 /* ---------- 列表(思考与讨论、要点提炼、争议聚焦等) ---------- */
@@ -406,9 +452,18 @@ p.thanks {
 /* 弹注场景(Apple Books 等)会把 aside 脱离章节单独渲染, 字号必须直接写在
    aside 上; epub:type 命名空间选择器兼容性差, 用 role 属性选择器兜底 */
 
-sup {
+/* 统一上下标(typo.css): 相对位移代替 vertical-align, 不撑高行距 */
+sub, sup {
   font-size: 0.75em;
   line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+sup {
+  top: -0.5em;
+}
+sub {
+  bottom: -0.25em;
 }
 a.footnote-ref {
   vertical-align: super;
